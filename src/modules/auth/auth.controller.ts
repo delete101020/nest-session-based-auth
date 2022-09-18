@@ -4,9 +4,13 @@ import { RequestUser } from '../../common/decorators';
 import { JoiValidationPipe } from '../../common/pipes';
 import { User } from '../user/models';
 import { AuthService } from './auth.service';
-import { RegisterDto } from './dtos';
+import { ForgotPasswordDto, RegisterDto, ResetPasswordDto } from './dtos';
 import { LocalAuthGuard } from './guards';
-import { RegisterSchema } from './schemas';
+import {
+  ForgotPasswordSchema,
+  RegisterSchema,
+  ResetPasswordSchema,
+} from './schemas';
 
 @Controller('auth')
 export class AuthController {
@@ -33,5 +37,19 @@ export class AuthController {
         resolve({});
       });
     });
+  }
+
+  @Post('forgot-password')
+  async forgotPassword(
+    @Body(new JoiValidationPipe(ForgotPasswordSchema)) data: ForgotPasswordDto,
+  ) {
+    return this._authService.forgotPassword(data);
+  }
+
+  @Post('reset-password')
+  async resetPassword(
+    @Body(new JoiValidationPipe(ResetPasswordSchema)) data: ResetPasswordDto,
+  ) {
+    return this._authService.resetPassword(data);
   }
 }

@@ -1,8 +1,7 @@
 import * as Joi from 'joi';
 
-export const LoginSchema = Joi.object()
+export const ForgotPasswordSchema = Joi.object()
   .keys({
     email: Joi.string().email().required(),
-    password: Joi.string().required(),
   })
   .options({ stripUnknown: true });

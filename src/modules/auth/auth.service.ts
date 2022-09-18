@@ -7,7 +7,7 @@ import {
 import { UserService } from '../user/user.service';
 import { User } from '../user/models';
 import { compare, genSalt, hash } from 'bcryptjs';
-import { RegisterDto } from './dtos';
+import { ForgotPasswordDto, RegisterDto, ResetPasswordDto } from './dtos';
 
 export const ACCESS_TOKEN = 'access';
 export const REFRESH_TOKEN = 'refresh';
@@ -32,6 +32,27 @@ export class AuthService {
       ...data,
       password: await this.hashPassword(password),
     });
+  }
+
+  async forgotPassword(data: ForgotPasswordDto) {
+    const { email } = data;
+    const user = await this._userService.getOneBy(email, 'email');
+    if (!user) throw new BadRequestException('User not found');
+
+    // TODO: Send email to user
+  }
+
+  async resetPassword(data: ResetPasswordDto) {
+    const { code, password } = data;
+
+    // TODO: Check if code is valid
+    if (code !== '123456') throw new BadRequestException('Invalid code');
+
+    const user = await this._userService.getOneBy(code, 'resetPasswordCode');
+    if (!user) throw new BadRequestException('User not found');
+
+    user.password = await this.hashPassword(password);
+    await this._userService.update(user);
   }
 
   /** LOGIN VALIDATION: EMAIL - GOOGLE - FACEBOOK */

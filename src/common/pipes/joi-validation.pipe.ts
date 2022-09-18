@@ -15,8 +15,7 @@ export class JoiValidationPipe implements PipeTransform {
     if (result.error) {
       // TODO: check if we can use UnprocessableEntityException or BadRequestException
       throw new UnprocessableEntityException({
-        message: 'Validation failed',
-        details: result.error.message.replace(/"/g, ''),
+        message: result.error.details[0].message.replace(/"/g, ''),
       });
     }
     return result.value;
