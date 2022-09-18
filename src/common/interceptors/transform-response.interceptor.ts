@@ -22,7 +22,6 @@ export class TransformResponseInterceptor<T>
   ): Observable<Response<T>> {
     return next.handle().pipe(
       map((data) => {
-        console.log(data);
         if (!data) return { message: 'SUCCESS' };
         if ('data' in data) return data;
         return { data };
