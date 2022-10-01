@@ -11,17 +11,24 @@ import {
 import { QueryParam } from '../../common/decorators';
 import { BaseQueryParams } from '../../common/interfaces';
 import { JoiValidationPipe } from '../../common/pipes';
+import { paginateResponse } from '../../common/utils';
 import { AuthenticatedGuard } from '../auth/guards';
+import { CategoryService } from '../category/category.service';
 import { CreatePostDto, UpdatePostDto } from './dtos';
 import { PostService } from './post.service';
 import { CreatePostSchema, UpdatePostSchema } from './schemas';
 
-export type PostQueryParams = BaseQueryParams;
+export interface PostQueryParams extends BaseQueryParams {
+  where?: { categories?: string[] };
+}
 
 @UseGuards(AuthenticatedGuard)
 @Controller('posts')
 export class PostController {
-  constructor(private readonly _postService: PostService) {}
+  constructor(
+    private readonly _postService: PostService,
+    private readonly _categoryService: CategoryService,
+  ) {}
 
   @Post()
   async create(
@@ -32,7 +39,13 @@ export class PostController {
 
   @Get()
   async get(@QueryParam() query: PostQueryParams) {
-    const { page = 1, limit = 10, search = '', sort = { name: 1 } } = query;
+    const {
+      page = 1,
+      limit = 10,
+      search = '',
+      sort = { name: 1 },
+      where: { categories = [] },
+    } = query;
 
     const queryObj: Record<string, unknown> = {
       $or: [
@@ -40,6 +53,13 @@ export class PostController {
         { slug: { $regex: search, $options: 'i' } },
       ],
     };
+
+    if (categories.length) {
+      const filterCategories = await this._categoryService.get({
+        slug: { $in: categories },
+      });
+      queryObj.category = { $in: filterCategories.map((c) => c._id) };
+    }
 
     const [posts, count] = await Promise.all([
       this._postService.get(queryObj, null, {
@@ -50,7 +70,7 @@ export class PostController {
       this._postService.count(queryObj),
     ]);
 
-    return { page, limit, count, data: posts };
+    return paginateResponse({ page, limit, count, data: posts });
   }
 
   @Get(':slug')
