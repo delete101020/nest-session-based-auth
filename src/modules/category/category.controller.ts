@@ -11,7 +11,7 @@ import {
 import { QueryParam } from '../../common/decorators';
 import { JoiValidationPipe } from '../../common/pipes';
 import { paginateResponse } from '../../common/utils';
-import { AuthenticatedGuard } from '../auth/guards';
+import { JwtAuthGuard } from '../auth/guards';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dtos';
 import { CreateCategorySchema } from './schemas';
@@ -22,7 +22,7 @@ export type CategoryQueryParams = {
   sort?: string;
 };
 
-@UseGuards(AuthenticatedGuard)
+@UseGuards(JwtAuthGuard)
 @Controller('categories')
 export class CategoryController {
   constructor(private _categoryService: CategoryService) {}

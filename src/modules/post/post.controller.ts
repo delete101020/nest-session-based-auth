@@ -12,7 +12,7 @@ import { QueryParam } from '../../common/decorators';
 import { BaseQueryParams } from '../../common/interfaces';
 import { JoiValidationPipe } from '../../common/pipes';
 import { paginateResponse } from '../../common/utils';
-import { AuthenticatedGuard } from '../auth/guards';
+import { JwtAuthGuard } from '../auth/guards';
 import { CategoryService } from '../category/category.service';
 import { CreatePostDto, UpdatePostDto } from './dtos';
 import { PostService } from './post.service';
@@ -22,7 +22,7 @@ export interface PostQueryParams extends BaseQueryParams {
   where?: { categories?: string[] };
 }
 
-@UseGuards(AuthenticatedGuard)
+@UseGuards(JwtAuthGuard)
 @Controller('posts')
 export class PostController {
   constructor(

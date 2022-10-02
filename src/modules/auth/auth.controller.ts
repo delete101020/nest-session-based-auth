@@ -1,5 +1,4 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
-import { Request } from 'express';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { RequestUser } from '../../common/decorators';
 import { JoiValidationPipe } from '../../common/pipes';
 import { User } from '../user/models';
@@ -26,17 +25,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@RequestUser() user: User) {
-    return user;
-  }
-
-  @Get('logout')
-  logout(@Req() req: Request) {
-    return new Promise((resolve, reject) => {
-      req.session.destroy((error) => {
-        if (error) reject(error);
-        resolve({});
-      });
-    });
+    return this._authService.login(user);
   }
 
   @Post('forgot-password')

@@ -1,7 +1,5 @@
 import * as compression from 'compression';
-import * as session from 'express-session';
 import helmet from 'helmet';
-import * as passport from 'passport';
 import { VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
@@ -9,28 +7,23 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { ConfigVar } from './configs';
+
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  app.enableCors({
-    origin: [
-      'http://localhost:3000',
-      'https://nest-session-based-auth.herokuapp.com',
-    ],
-    credentials: true,
-  });
+  app.enableCors();
   app.use(compression());
   app.use(helmet());
 
-  app.use(
-    session({
-      secret: 'session-secret',
-      resave: false,
-      saveUninitialized: false,
-    }),
-  );
-  app.use(passport.initialize());
-  app.use(passport.session());
+  // app.use(
+  //   session({
+  //     secret: 'session-secret',
+  //     resave: false,
+  //     saveUninitialized: false,
+  //   }),
+  // );
+  // app.use(passport.initialize());
+  // app.use(passport.session());
 
   app.enableVersioning({
     type: VersioningType.URI,
