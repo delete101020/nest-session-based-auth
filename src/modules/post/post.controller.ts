@@ -44,7 +44,7 @@ export class PostController {
       limit = 10,
       search = '',
       sort = { name: 1 },
-      where: { categories = [] },
+      where: { categories = [] } = { categories: [] },
     } = query;
 
     const queryObj: Record<string, unknown> = {
