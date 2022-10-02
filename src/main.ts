@@ -12,7 +12,13 @@ import { ConfigVar } from './configs';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  app.enableCors();
+  app.enableCors({
+    origin: [
+      'http://localhost:3000',
+      'https://nest-session-based-auth.herokuapp.com',
+    ],
+    credentials: true,
+  });
   app.use(compression());
   app.use(helmet());
 
