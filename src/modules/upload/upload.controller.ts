@@ -1,5 +1,6 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { JoiValidationPipe } from '../../common/pipes';
+import { JwtAuthGuard } from '../auth/guards';
 import {
   CreatePresignedURLDto,
   InitMultipartUploadDto,
@@ -14,6 +15,7 @@ import {
 } from './schemas';
 import { UploadService } from './upload.service';
 
+@UseGuards(JwtAuthGuard)
 @Controller('uploads')
 export class UploadController {
   constructor(private _uploadService: UploadService) {}
