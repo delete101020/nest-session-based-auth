@@ -19,7 +19,7 @@ export const generateSlug = ({
     trim: true,
   })}`;
 
-  return extendRandom ? `${slug}-${randomString.generate(len)}` : slug;
+  return extendRandom ? `${slug}-${randomString.generate(len)}`.toLowerCase() : slug;
 };
 
 export const compareSlugs = (slug1: string, slug2: string): boolean => {
