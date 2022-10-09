@@ -28,6 +28,11 @@ export class AuthController {
     return this._authService.login(user);
   }
 
+  @Post('refresh')
+  async refreshToken(@Body('refreshToken') refreshToken: string) {
+    return this._authService.refreshToken(refreshToken);
+  }
+
   @Post('forgot-password')
   async forgotPassword(
     @Body(new JoiValidationPipe(ForgotPasswordSchema)) data: ForgotPasswordDto,
