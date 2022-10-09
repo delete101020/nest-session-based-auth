@@ -1,6 +1,6 @@
 import * as compression from 'compression';
 import helmet from 'helmet';
-import { VersioningType } from '@nestjs/common';
+import { INestApplication, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
@@ -31,14 +31,7 @@ async function bootstrap() {
     prefix: 'api/v',
   });
 
-  const config = new DocumentBuilder()
-    .setTitle('Personal Blog API')
-    .setDescription('NestJS API - MongoDB for Dung Dung')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  setupSwagger(app);
 
   const configService = app.get(ConfigService);
   const host = configService.get<string>(ConfigVar.HOST);
@@ -47,4 +40,16 @@ async function bootstrap() {
     console.log(`Server is listening at ${host}:${port}`);
   });
 }
+
+function setupSwagger(app: INestApplication) {
+  const config = new DocumentBuilder()
+    .setTitle('Personal Blog API')
+    .setDescription('NestJS API - MongoDB for Dung Dung')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('docs', app, document);
+}
+
 bootstrap();

@@ -8,6 +8,8 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import { BaseController } from '../../common/controllers';
 import { QueryParam } from '../../common/decorators';
 import { BaseQueryParams } from '../../common/interfaces';
 import { JoiValidationPipe } from '../../common/pipes';
@@ -22,13 +24,16 @@ export interface PostQueryParams extends BaseQueryParams {
   where?: { categories?: string[] };
 }
 
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('posts')
-export class PostController {
+export class PostController extends BaseController {
   constructor(
     private readonly _postService: PostService,
     private readonly _categoryService: CategoryService,
-  ) {}
+  ) {
+    super();
+  }
 
   @Post()
   async create(
@@ -37,6 +42,19 @@ export class PostController {
     return this._postService.createFromRequestBody(data);
   }
 
+  @ApiQuery({
+    name: 'query',
+    schema: {
+      type: 'object',
+      properties: {
+        page: { type: 'number', default: 1 },
+        limit: { type: 'number', default: 10 },
+        sort: { type: 'object', default: 'name:1' },
+        where: { type: 'object', default: { categories: [] } },
+      },
+      required: [],
+    },
+  })
   @Get()
   async get(@QueryParam() query: PostQueryParams) {
     const {

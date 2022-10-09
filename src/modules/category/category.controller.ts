@@ -8,13 +8,15 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import { BaseController } from '../../common/controllers';
 import { QueryParam } from '../../common/decorators';
 import { JoiValidationPipe } from '../../common/pipes';
 import { paginateResponse } from '../../common/utils';
 import { JwtAuthGuard } from '../auth/guards';
 import { CategoryService } from './category.service';
-import { CreateCategoryDto } from './dtos';
-import { CreateCategorySchema } from './schemas';
+import { CreateCategoryDto, UpdateCategoryDto } from './dtos';
+import { CreateCategorySchema, UpdateCategorySchema } from './schemas';
 
 export type CategoryQueryParams = {
   page?: number;
@@ -22,10 +24,13 @@ export type CategoryQueryParams = {
   sort?: string;
 };
 
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('categories')
-export class CategoryController {
-  constructor(private _categoryService: CategoryService) {}
+export class CategoryController extends BaseController {
+  constructor(private _categoryService: CategoryService) {
+    super();
+  }
 
   @Post()
   async create(
@@ -34,6 +39,18 @@ export class CategoryController {
     return this._categoryService.createFromRequestBody(data);
   }
 
+  @ApiQuery({
+    name: 'query',
+    schema: {
+      type: 'object',
+      properties: {
+        page: { type: 'number', default: 1 },
+        limit: { type: 'number', default: 10 },
+        sort: { type: 'object', default: 'name:1' },
+      },
+      required: [],
+    },
+  })
   @Get()
   async get(@QueryParam() query: CategoryQueryParams) {
     const { page = 1, limit = 10, sort = { name: 1 } } = query;
@@ -58,7 +75,7 @@ export class CategoryController {
   @Put(':categoryId')
   async update(
     @Param('categoryId') categoryId: string,
-    @Body(new JoiValidationPipe(CreateCategorySchema)) data: CreateCategoryDto,
+    @Body(new JoiValidationPipe(UpdateCategorySchema)) data: UpdateCategoryDto,
   ) {
     return this._categoryService.updateFromRequestBody({
       ...data,

@@ -74,12 +74,12 @@ export class AuthService {
   }
 
   async resetPassword(data: ResetPasswordDto) {
-    const { code, password } = data;
+    const { email, code, password } = data;
 
     // TODO: Check if code is valid
     if (code !== '123456') throw new BadRequestException('Invalid code');
 
-    const user = await this._userService.getOneBy(code, 'resetPasswordCode');
+    const user = await this._userService.getOneBy(email, 'email');
     if (!user) throw new BadRequestException('User not found');
 
     user.password = await this.hashPassword(password);

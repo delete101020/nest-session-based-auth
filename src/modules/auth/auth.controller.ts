@@ -1,9 +1,16 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { ApiBody } from '@nestjs/swagger';
+import { BaseController } from '../../common/controllers';
 import { RequestUser } from '../../common/decorators';
 import { JoiValidationPipe } from '../../common/pipes';
 import { User } from '../user/models';
 import { AuthService } from './auth.service';
-import { ForgotPasswordDto, RegisterDto, ResetPasswordDto } from './dtos';
+import {
+  ForgotPasswordDto,
+  LoginDto,
+  RegisterDto,
+  ResetPasswordDto,
+} from './dtos';
 import { LocalAuthGuard } from './guards';
 import {
   ForgotPasswordSchema,
@@ -12,8 +19,10 @@ import {
 } from './schemas';
 
 @Controller('auth')
-export class AuthController {
-  constructor(private _authService: AuthService) {}
+export class AuthController extends BaseController {
+  constructor(private _authService: AuthService) {
+    super();
+  }
 
   @Post('register')
   async register(
@@ -22,6 +31,7 @@ export class AuthController {
     return this._authService.register(data);
   }
 
+  @ApiBody({ type: LoginDto })
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@RequestUser() user: User) {
